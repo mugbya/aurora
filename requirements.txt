@@ -1,0 +1,25 @@
+
+# requirement python3.5
+
+aiofiles
+
+httptools
+
+ujson
+
+uvloop
+
+sanic
+
+
+#  数据库连接
+asyncpg
+
+# 数据库orm 支持
+# peewee-async
+# peewee
+
+# marshmallowpip
+
+
+
