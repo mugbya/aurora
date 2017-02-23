@@ -87,3 +87,16 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+
+.vscode/
+
+.cache/
+
+.idea/
+
+*/__pycache__/
+
+local_settings.py
+
+
