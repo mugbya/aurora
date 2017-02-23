@@ -12,6 +12,10 @@ uvloop
 sanic
 
 
+# 日记记录
+raven
+
+
 #  数据库连接
 asyncpg
 

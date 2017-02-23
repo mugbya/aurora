@@ -10,5 +10,5 @@ app.blueprint(user_bp)
 app.static('/static', './static')
 
 
-if __name__=="__name__":
+if __name__=="__main__":
     app.run(host="0.0.0.0", port=settings.PORT, workers=settings.workers, debug=settings.DEBUG)

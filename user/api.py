@@ -6,6 +6,7 @@ import asyncpg
 from asyncpg.exceptions import InvalidTextRepresentationError
 
 from config import settings
+from config.settings import client
 
 bp = Blueprint('user', url_prefix='/v1/user')
 
@@ -33,6 +34,7 @@ async def index(request):
         results = await stmt.fetch()
 
     obj_list = [dict(obj) for obj in results]
+
     return json(obj_list)
 
 
@@ -73,10 +75,9 @@ async def save_user(request):
                         VALUES ('{username}', '{nickname}', '{password}', '{email}') '''.format(
                         username=username, nickname=nickname, password=password, email=email))
             except InvalidTextRepresentationError as e:
-                # TODO log handler
-                print('insert error:', e.message)
+                client.captureException()
             except Exception as e:
-                print('error:', e.message)
+                client.captureException()
 
         if result:
             return json({'msg': 'ok'})

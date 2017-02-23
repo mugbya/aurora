@@ -20,6 +20,10 @@ DB_CONFIG = {
     'database': '<database>'
 }
 
+from raven import Client
+
+client = Client('https://******@sentry.io/141953')
+
 try:
     from .local_settings import *
 except ImportError:
