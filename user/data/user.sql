@@ -1,6 +1,6 @@
 CREATE DATABASE  ull_user
 
-CREATE TABLE public."user"
+CREATE TABLE "users"
 (
     id SERIAL PRIMARY KEY,
     username VARCHAR(30),

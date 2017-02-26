@@ -8,7 +8,6 @@ This Project based Sanic
 ### requirements
 
 - uvloop
-
 - sanic
-
 - asyncpg
+- raven

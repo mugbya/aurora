@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-settings for ull_user project.
+project settings for Aurora.
 
 """
-
 
 DEBUG = False
 
 workers = 4
 
 PORT = 80
-
 
 DB_CONFIG = {
     'host': '<host>',
@@ -20,9 +18,8 @@ DB_CONFIG = {
     'database': '<database>'
 }
 
-from raven import Client
-
-client = Client('https://******@sentry.io/141953')
+# from raven import Client
+# client = Client('https://******@sentry.io/141953')
 
 try:
     from .local_settings import *
