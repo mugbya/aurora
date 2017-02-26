@@ -26,7 +26,8 @@ async def get_user(request, username):
     :param request:
     :return:
     '''
-    pass
+
+    user = await User.findAll('nickuser=?', [username])
     # async with conn_pool.acquire() as conn:
     #     stmt = await conn.prepare(
     #         '''SELECT id,  email FROM public.user WHERE nickname='{nickname}' '''.format(nickname=username, ))

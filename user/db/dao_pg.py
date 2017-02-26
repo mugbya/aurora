@@ -14,8 +14,8 @@ async def setup_connection(app, loop):
     # TODO 监听数据库连接数变化
     global _pool
     logging.info('create database connection pool...')
-    loop = uvloop.new_event_loop()
-    settings.DB_CONFIG.update({'loop': loop})
+    # loop = uvloop.new_event_loop()
+    # settings.DB_CONFIG.update({'loop': loop})
     _pool = await asyncpg.create_pool(**settings.DB_CONFIG)
 
 async def close_connection(app, loop):
