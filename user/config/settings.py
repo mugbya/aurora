@@ -39,17 +39,22 @@ logging_config = dict(
         'h': {'class': 'logging.StreamHandler',
               'formatter': 'f',
               'level': logging.DEBUG
-              }
+              },
+        'l': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'f',
+            'level': logging.INFO
+        },
+
     },
     loggers={
-        'root': {'handlers': ['h'],
+        'root': {'handlers': ['l'],
                  'level': logging.DEBUG
                  }
     }
 )
 
 dictConfig(logging_config)
-
 
 try:
     from .local_settings import *

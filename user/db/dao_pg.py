@@ -3,6 +3,8 @@ from config import settings
 
 import logging
 
+logger = logging.getLogger()
+
 '''
 asyncpg 封装 + orm
 '''
@@ -24,7 +26,7 @@ async def setup_connection(app, loop):
     :return:
     '''
     global _pool
-    logging.info('create database connection pool...')
+    logger.info('create database connection pool...')
     _pool = await asyncpg.create_pool(**settings.DB_CONFIG)
     return _pool
 
@@ -36,7 +38,7 @@ async def close_connection(app, loop):
     :return:
     '''
     await _pool.close()
-    logging.info('database pool died ')
+    logger.info('database pool died ')
 
 
 async def select(sql, args, size=None):
@@ -48,7 +50,7 @@ async def select(sql, args, size=None):
             # rs = await con.fetch(sql.replace('?', '%s'), args or ())
             # args = ['mugbya', 'mugbya']
             rs = await con.fetch(sql)
-        logging.info('rows returned: %s' % len(rs))
+            logging.info('rows returned: %s' % len(rs))
         return rs
 
 

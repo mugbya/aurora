@@ -1,8 +1,6 @@
 from sanic.response import json
 from sanic import Blueprint
 
-from models import User
-
 import logging
 
 logger = logging.getLogger()
@@ -32,6 +30,7 @@ async def index(request):
         return json(obj_list)
     except Exception as e:
         logger.error('index error', e)
+        return json({'msg': 'fail'})
 
 
 @bp.route('/<username>/')
@@ -41,14 +40,17 @@ async def get_user(request, username):
     :param request:
     :return:
     '''
-    async with bp.pool.acquire() as conn:
-        stmt = await conn.prepare(
-            '''SELECT id,  email FROM public.user WHERE nickname='{nickname}' '''.format(nickname=username, ))
+    try:
+        async with bp.pool.acquire() as conn:
+            sql = '''SELECT id,  email FROM users WHERE nickname='{nickname}' '''.format(nickname=username, )
+            stmt = await conn.prepare(sql)
+            results = await stmt.fetch()
 
-        results = await stmt.fetch()
-
-    obj_list = [dict(obj) for obj in results]
-    return json(obj_list)
+        obj_list = [dict(obj) for obj in results]
+        return json(obj_list)
+    except Exception as e:
+        logger.error('index error', e)
+        return json({'msg': 'fail'})
 
 
 @bp.post('/save/')
@@ -58,24 +60,23 @@ async def save_user(request):
     :param request:
     :return:
     '''
-    if request.form:
-        username = request.parsed_form.get('username', '')
-        nickname = request.parsed_form.get('nickname', '')
-        password = request.parsed_form.get('password', '')
-        email = request.parsed_form.get('email', '')
+    try:
+        if request.form:
+            username = request.parsed_form.get('username', '')
+            nickname = request.parsed_form.get('nickname', '')
+            password = request.parsed_form.get('password', '')
+            email = request.parsed_form.get('email', '')
 
-        async with conn_pool.acquire() as conn:
-            try:
-                result = await conn.execute(
-                    '''INSERT INTO PUBLIC.user (username, nickname, password, email)
+            async with bp.pool.acquire() as conn:
+                sql = '''INSERT INTO PUBLIC.user (username, nickname, password, email)
                         VALUES ('{username}', '{nickname}', '{password}', '{email}') '''.format(
-                        username=username, nickname=nickname, password=password, email=email))
-            except InvalidTextRepresentationError as e:
-                client.captureException()
-            except Exception as e:
-                client.captureException()
+                        username=username, nickname=nickname, password=password, email=email)
+                result = await conn.execute(sql)
+            if result:
+                return json({'msg': 'ok'})
 
-        if result:
-            return json({'msg': 'ok'})
+        return json({'msg': 'fail'})
 
-    return json({'msg': 'fail'})
+    except Exception as e:
+        logger.error('index error', e)
+        return json({'msg': 'fail'})
