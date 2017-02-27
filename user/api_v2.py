@@ -5,6 +5,8 @@ from models import User
 
 import logging
 
+logger = logging.getLogger()
+
 bp = Blueprint('user_v2', url_prefix='/v2/user')
 
 '''
@@ -20,13 +22,16 @@ async def index(request):
     :param request:
     :return:
     '''
-    async with bp.pool.acquire() as conn:
-        stmt = await conn.prepare('''SELECT id,  email FROM users ''')
+    try:
+        async with bp.pool.acquire() as conn:
+            stmt = await conn.prepare('''SELECT id,  email FROM users ''')
 
-        results = await stmt.fetch()
+            results = await stmt.fetch()
 
-    obj_list = [dict(obj) for obj in results]
-    return json(obj_list)
+        obj_list = [dict(obj) for obj in results]
+        return json(obj_list)
+    except Exception as e:
+        logger.error('index error', e)
 
 
 @bp.route('/<username>/')
@@ -36,8 +41,9 @@ async def get_user(request, username):
     :param request:
     :return:
     '''
-    async with conn_pool.acquire() as conn:
-        stmt = await conn.prepare('''SELECT id,  email FROM public.user WHERE nickname='{nickname}' '''.format(nickname=username, ))
+    async with bp.pool.acquire() as conn:
+        stmt = await conn.prepare(
+            '''SELECT id,  email FROM public.user WHERE nickname='{nickname}' '''.format(nickname=username, ))
 
         results = await stmt.fetch()
 
