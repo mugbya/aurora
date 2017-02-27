@@ -7,7 +7,9 @@ import logging
 
 bp = Blueprint('user', url_prefix='/v1/user')
 
-
+'''
+/v1/user 旨在 以orm实现业务需求
+'''
 @bp.route('/')
 async def index(request):
     '''
@@ -27,10 +29,9 @@ async def get_user(request, username):
     :return:
     '''
 
-    user = await User.findAll('nickuser=?', [username])
+    user = await User.findAll('nickname=?', [username])
     # async with conn_pool.acquire() as conn:
-    #     stmt = await conn.prepare(
-    #         '''SELECT id,  email FROM public.user WHERE nickname='{nickname}' '''.format(nickname=username, ))
+    #     stmt = await conn.prepare('''SELECT id,  email FROM public.user WHERE nickname='{nickname}' '''.format(nickname=username, ))
     #
     #     results = await stmt.fetch()
     #

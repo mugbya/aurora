@@ -3,22 +3,38 @@ from config import settings
 
 import logging
 
+'''
+asyncpg 封装 + orm
+'''
+
 
 def log(sql, args=()):
     logging.info('SQL: %s' % sql)
 
-import uvloop
-
 
 async def setup_connection(app, loop):
-    # TODO 监听数据库连接数变化
+    '''
+    创建数据库连接池
+
+    监听数据库连接数变化
+    select * from pg_stat_activity;
+
+    :param app:
+    :param loop:
+    :return:
+    '''
     global _pool
     logging.info('create database connection pool...')
-    # loop = uvloop.new_event_loop()
-    # settings.DB_CONFIG.update({'loop': loop})
     _pool = await asyncpg.create_pool(**settings.DB_CONFIG)
+    return _pool
+
 
 async def close_connection(app, loop):
+    '''
+    :param app:
+    :param loop:
+    :return:
+    '''
     await _pool.close()
     logging.info('database pool died ')
 
@@ -28,8 +44,10 @@ async def select(sql, args, size=None):
     async with _pool.acquire() as con:
         async with con.transaction():
             # cur = await con.fetch(sql.replace('?', '%s'), args or ())
-
-            rs = await con.fetch(sql+';')
+            # sql = '''select id, nickname, username, email, password from users where nickname='$1' '''
+            # rs = await con.fetch(sql.replace('?', '%s'), args or ())
+            # args = ['mugbya', 'mugbya']
+            rs = await con.fetch(sql)
         logging.info('rows returned: %s' % len(rs))
         return rs
 
@@ -112,9 +130,9 @@ class ModelMetaclass(type):
         attrs['__fields__'] = fields  # 除主键外的属性名
         attrs['__select__'] = 'select %s, %s from %s' % (primaryKey, ', '.join(escaped_fields), tableName)
         attrs['__insert__'] = 'insert into `%s` (%s, `%s`) values (%s)' % (
-        tableName, ', '.join(escaped_fields), primaryKey, create_args_string(len(escaped_fields) + 1))
+            tableName, ', '.join(escaped_fields), primaryKey, create_args_string(len(escaped_fields) + 1))
         attrs['__update__'] = 'update `%s` set %s where `%s`=?' % (
-        tableName, ', '.join(map(lambda f: '`%s`=?' % (mappings.get(f).name or f), fields)), primaryKey)
+            tableName, ', '.join(map(lambda f: '`%s`=?' % (mappings.get(f).name or f), fields)), primaryKey)
         attrs['__delete__'] = 'delete from `%s` where `%s`=?' % (tableName, primaryKey)
         return type.__new__(cls, name, bases, attrs)
 
