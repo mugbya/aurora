@@ -51,14 +51,31 @@ async def select(sql, *args, size=None):
         return rs
 
 
-async def execute(sql, args, autocommit=True):
+async def execute(sql, *args, autocommit=True):
     log(sql)
-
+    async with _pool.acquire() as con:
+        rs = await con.execute(sql, *args)
+        return rs
+    # with (yield from __pool) as conn:
+    #     if not autocommit:
+    #         yield from conn.begin()
+    #     try:
+    #         cur = yield from conn.cursor()
+    #         yield from cur.execute(sql.replace('?', '%s'), args)
+    #         affected = cur.rowcount
+    #         yield from cur.close()
+    #         if not autocommit:
+    #             yield from conn.commit()
+    #     except BaseException as e:
+    #         if not autocommit:
+    #             yield from conn.rollback()
+    #         raise
+    #     return affected
 
 def create_args_string(num):
     L = []
     for n in range(num):
-        L.append('?')
+        L.append('$' + str(n+1))
     return ', '.join(L)
 
 
@@ -128,11 +145,11 @@ class ModelMetaclass(type):
         attrs['__primary_key__'] = primaryKey  # 主键属性名
         attrs['__fields__'] = fields  # 除主键外的属性名
         attrs['__select__'] = 'select %s, %s from %s' % (primaryKey, ', '.join(escaped_fields), tableName)
-        attrs['__insert__'] = 'insert into `%s` (%s, `%s`) values (%s)' % (
-            tableName, ', '.join(escaped_fields), primaryKey, create_args_string(len(escaped_fields) + 1))
-        attrs['__update__'] = 'update `%s` set %s where `%s`=?' % (
-            tableName, ', '.join(map(lambda f: '`%s`=?' % (mappings.get(f).name or f), fields)), primaryKey)
-        attrs['__delete__'] = 'delete from `%s` where `%s`=?' % (tableName, primaryKey)
+        # attrs['__insert__'] = 'insert into %s (%s, %s) values (%s)' % (tableName, ', '.join(escaped_fields), primaryKey, create_args_string(len(escaped_fields) + 1))
+        attrs['__insert__'] = 'insert into %s (%s) values (%s)' % (tableName, ', '.join(escaped_fields), create_args_string(len(escaped_fields)))
+        attrs['__update__'] = 'update %s set %s where %s=?' % (
+            tableName, ', '.join(map(lambda f: '%s=?' % (mappings.get(f).name or f), fields)), primaryKey)
+        attrs['__delete__'] = 'delete from %s where %s=?' % (tableName, primaryKey)
         return type.__new__(cls, name, bases, attrs)
 
 
@@ -163,11 +180,9 @@ class Model(dict, metaclass=ModelMetaclass):
         return value
 
     @classmethod
-    async def all(cls, *args, **kw):
+    async def all(cls):
         '''
-        find objects by where clause
-        :param args:
-        :param kw: Query parameters
+        find all objects
         :return:
         '''
         sql = [cls.__select__]
@@ -246,10 +261,14 @@ class Model(dict, metaclass=ModelMetaclass):
 
     async def save(self):
         args = list(map(self.getValueOrDefault, self.__fields__))
-        args.append(self.getValueOrDefault(self.__primary_key__))
-        rows = await execute(self.__insert__, args)
-        if rows != 1:
+        # args.append(self.getValueOrDefault(self.__primary_key__))
+
+        rows = await execute(self.__insert__, *args)
+        if not rows:
             logging.warn('failed to insert record: affected rows: %s' % rows)
+            return False
+        else:
+            return True
 
     async def update(self):
         args = list(map(self.getValue, self.__fields__))
