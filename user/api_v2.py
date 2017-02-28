@@ -29,7 +29,7 @@ async def index(request):
         obj_list = [dict(obj) for obj in results]
         return json(obj_list)
     except Exception as e:
-        logger.error('index error', e)
+        logger.error('index error', str(e))
         return json({'msg': 'fail'})
 
 
@@ -42,14 +42,20 @@ async def get_user(request, username):
     '''
     try:
         async with bp.pool.acquire() as conn:
-            sql = '''SELECT id,  email FROM users WHERE nickname='{nickname}' '''.format(nickname=username, )
+            # 使用格式化
+            # sql = '''SELECT id,  email FROM users WHERE nickname='{nickname}' '''.format(nickname=username, )
+            # stmt = await conn.prepare(sql)
+            # results = await stmt.fetch()
+
+            # 使用 asyncpg 提供的占位符
+            sql = '''SELECT id,  email FROM users WHERE nickname=$1 '''
             stmt = await conn.prepare(sql)
-            results = await stmt.fetch()
+            results = await stmt.fetch(username)
 
         obj_list = [dict(obj) for obj in results]
         return json(obj_list)
     except Exception as e:
-        logger.error('index error', e)
+        logger.error('get_user error', str(e))
         return json({'msg': 'fail'})
 
 
@@ -68,15 +74,19 @@ async def save_user(request):
             email = request.parsed_form.get('email', '')
 
             async with bp.pool.acquire() as conn:
-                sql = '''INSERT INTO PUBLIC.user (username, nickname, password, email)
-                        VALUES ('{username}', '{nickname}', '{password}', '{email}') '''.format(
-                        username=username, nickname=nickname, password=password, email=email)
-                result = await conn.execute(sql)
+
+                # sql = '''INSERT INTO users (username, nickname, password, email)
+                #         VALUES ('{username}', '{nickname}', '{password}', '{email}') '''.format(
+                #         username=username, nickname=nickname, password=password, email=email)
+                # result = await conn.execute(sql)
+
+                sql = '''INSERT INTO users (username, nickname, password, email) VALUES ($1, $2, $3, $4) '''
+                result = await conn.execute(sql, username, nickname, password, email)
             if result:
                 return json({'msg': 'ok'})
 
         return json({'msg': 'fail'})
 
     except Exception as e:
-        logger.error('index error', e)
+        logger.error('user save error', str(e))
         return json({'msg': 'fail'})
