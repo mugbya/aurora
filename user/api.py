@@ -5,11 +5,15 @@ from models import User
 
 import logging
 
+logger = logging.getLogger()
+
 bp = Blueprint('user', url_prefix='/v1/user')
 
 '''
 /v1/user 旨在 以orm实现业务需求
 '''
+
+
 @bp.route('/')
 async def index(request):
     '''
@@ -17,7 +21,7 @@ async def index(request):
     :param request:
     :return:
     '''
-    obj_list = await User.findAll()
+    obj_list = await User.all()
     return json(obj_list)
 
 
@@ -28,15 +32,14 @@ async def get_user(request, username):
     :param request:
     :return:
     '''
+    try:
+        user_list = await User.filter(nickname=username,)
+        # user_list = await User.findAll('nickname=$1', username)
 
-    user = await User.findAll('nickname=?', [username])
-    # async with conn_pool.acquire() as conn:
-    #     stmt = await conn.prepare('''SELECT id,  email FROM public.user WHERE nickname='{nickname}' '''.format(nickname=username, ))
-    #
-    #     results = await stmt.fetch()
-    #
-    # obj_list = [dict(obj) for obj in results]
-    # return json(obj_list)
+        return json(user_list)
+    except Exception as e:
+        logger.error('get_user error', str(e))
+        return json({'msg': 'fail'})
 
 
 @bp.post('/save/')

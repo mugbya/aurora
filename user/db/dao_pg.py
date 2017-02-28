@@ -41,16 +41,13 @@ async def close_connection(app, loop):
     logger.info('database pool died ')
 
 
-async def select(sql, args, size=None):
+async def select(sql, *args, size=None):
     log(sql, args)
     async with _pool.acquire() as con:
-        async with con.transaction():
+        # async with con.transaction():
             # cur = await con.fetch(sql.replace('?', '%s'), args or ())
-            # sql = '''select id, nickname, username, email, password from users where nickname='$1' '''
-            # rs = await con.fetch(sql.replace('?', '%s'), args or ())
-            # args = ['mugbya', 'mugbya']
-            rs = await con.fetch(sql)
-            logging.info('rows returned: %s' % len(rs))
+        rs = await con.fetch(sql, *args)
+        logging.info('rows returned: %s' % len(rs))
         return rs
 
 
@@ -166,7 +163,42 @@ class Model(dict, metaclass=ModelMetaclass):
         return value
 
     @classmethod
-    async def findAll(cls, where=None, args=None, **kw):
+    async def all(cls, *args, **kw):
+        '''
+        find objects by where clause
+        :param args:
+        :param kw: Query parameters
+        :return:
+        '''
+        sql = [cls.__select__]
+        rs = await select(' '.join(sql))
+        return [cls(**r) for r in rs]
+
+    @classmethod
+    async def filter(cls, *args, **kw):
+        '''
+        find objects by where clause
+        :param args:
+        :param kw: Query parameters
+        :return:
+        '''
+        sql = [cls.__select__]
+        if kw:
+            sql.append('where')
+        if not args:
+            args = []
+
+        # 用占位符构造查询条件
+        for index, key in enumerate(kw.keys()):
+            index += 1
+            sql.append(key + '=$' + str(index))
+            args.append(kw.get(key))
+
+        rs = await select(' '.join(sql), *args)
+        return [cls(**r) for r in rs]
+
+    @classmethod
+    async def findAll(cls, where=None, *args, **kw):
         ' find objects by where clause. '
         sql = [cls.__select__]
         if where:
@@ -189,7 +221,7 @@ class Model(dict, metaclass=ModelMetaclass):
                 args.extend(limit)
             else:
                 raise ValueError('Invalid limit value: %s' % str(limit))
-        rs = await select(' '.join(sql), args)
+        rs = await select(' '.join(sql), *args)
         return [cls(**r) for r in rs]
 
     @classmethod
