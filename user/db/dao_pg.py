@@ -131,12 +131,12 @@ class ModelMetaclass(type):
                 if v.primary_key:
                     # 找到主键:
                     if primaryKey:
-                        raise StandardError('Duplicate primary key for field: %s' % k)
+                        raise Exception('Duplicate primary key for field: %s' % k)
                     primaryKey = k
                 else:
                     fields.append(k)
-        if not primaryKey:
-            raise StandardError('Primary key not found.')
+        # if not primaryKey:
+        #     raise Exception('Primary key not found.')
         for k in mappings.keys():
             attrs.pop(k)
         escaped_fields = list(map(lambda f: '%s' % f, fields))
@@ -211,6 +211,33 @@ class Model(dict, metaclass=ModelMetaclass):
 
         rs = await select(' '.join(sql), *args)
         return [cls(**r) for r in rs]
+
+
+    @classmethod
+    async def get(cls, *args, **kw):
+        '''
+        返回对象
+        :param args:
+        :param kw:
+        :return:
+        '''
+        sql = [cls.__select__]
+        if kw:
+            sql.append('where')
+        if not args:
+            args = []
+
+        # 用占位符构造查询条件
+        for index, key in enumerate(kw.keys()):
+            index += 1
+            sql.append(key + '=$' + str(index))
+            args.append(kw.get(key))
+
+        res = await select(' '.join(sql), *args)
+        # return [type(cls.__name__, (), cls(**r)) for r in res]
+        # return [type(cls.__name__, (Model, ), cls(**r)) for r in res]
+        return [type(cls.__name__, (Model, ), cls(**r)) for r in res]
+
 
     @classmethod
     async def findAll(cls, where=None, *args, **kw):

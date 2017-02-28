@@ -70,3 +70,34 @@ async def save_user(request):
     except Exception as e:
         logger.error('user save error', str(e))
         return json({'msg': 'fail'})
+
+
+@bp.post('/update/<id>/')
+async def update_user(request, id):
+    '''
+    更新user对象
+    :param request:
+    :param id:
+    :return:
+    '''
+    try:
+        if request.form:
+            id = request.parsed_form.get('id', '')
+            username = request.parsed_form.get('username', '')
+            nickname = request.parsed_form.get('nickname', '')
+            password = request.parsed_form.get('password', '')
+            email = request.parsed_form.get('email', '')
+
+            users = await User.get(id=int(id))
+            if users:
+                user = users[0]
+                for key, value in request.parsed_form.items():
+                    setattr(user, key, value)
+                await user.save()
+                return json({'msg': 'ok'})
+        return json({'msg': 'fail'})
+
+    except Exception as e:
+        logger.error('user save error', str(e))
+        return json({'msg': 'fail'})
+
