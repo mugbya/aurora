@@ -167,7 +167,15 @@ class Model(dict, metaclass=ModelMetaclass):
         self[key] = value
 
     def getValue(self, key):
-        return getattr(self, key, None)
+        '''
+        获取属性值
+        :param key:
+        :return:
+        '''
+        res = getattr(self, key, None)
+        if isinstance(res, list):
+            res = res[0]
+        return res
 
     def getValueOrDefault(self, key):
         value = getattr(self, key, None)
@@ -294,15 +302,19 @@ class Model(dict, metaclass=ModelMetaclass):
             return True
 
     async def update(self):
-        args = list(map(self.getValue, self.__fields__))
+
+        # 特殊处置主键
+        primary_val = self.pop(self.__primary_key__)
+        primary_val = primary_val[0] if isinstance(primary_val, list) else primary_val
+
+        args = list(map(self.getValue, self.keys()))
 
         # 处理主键类型 asyncpg 区分类型
         if isinstance(self.__mappings__.get(self.__primary_key__), IntegerField):
-            args.append(int(self.getValue(self.__primary_key__)))
+            args.append(int(primary_val))
         else:
-            args.append(self.getValue(self.__primary_key__))
+            args.append(primary_val)
 
-        self.pop(self.__primary_key__)
         sql = self.__update__
         index = 0
         for index, key in enumerate(self.keys()):

@@ -76,20 +76,22 @@ async def save_user(request):
 async def update_user(request, id):
     '''
     更新user对象
+
+        id = request.parsed_form.get('id', '')
+        username = request.parsed_form.get('username', '')
+        nickname = request.parsed_form.get('nickname', '')
+        password = request.parsed_form.get('password', '')
+        email = request.parsed_form.get('email', '')
+
+        user = User(id=id, username=username, nickname=nickname, password=password, email=email)
+
     :param request:
     :param id:
     :return:
     '''
     try:
         if request.form:
-            id = request.parsed_form.get('id', '')
-            username = request.parsed_form.get('username', '')
-            nickname = request.parsed_form.get('nickname', '')
-            password = request.parsed_form.get('password', '')
-            email = request.parsed_form.get('email', '')
-
-            user = User(id=id, username=username, nickname=nickname, password=password, email=email)
-            # user = User(**request.parsed_form)
+            user = User(**request.parsed_form)
             await user.update()
             return json({'msg': 'ok'})
         return json({'msg': 'fail'})
