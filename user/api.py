@@ -88,13 +88,10 @@ async def update_user(request, id):
             password = request.parsed_form.get('password', '')
             email = request.parsed_form.get('email', '')
 
-            users = await User.get(id=int(id))
-            if users:
-                user = users[0]
-                for key, value in request.parsed_form.items():
-                    setattr(user, key, value)
-                await user.save()
-                return json({'msg': 'ok'})
+            user = User(id=id, username=username, nickname=nickname, password=password, email=email)
+            # user = User(**request.parsed_form)
+            await user.update()
+            return json({'msg': 'ok'})
         return json({'msg': 'fail'})
 
     except Exception as e:

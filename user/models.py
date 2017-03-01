@@ -1,6 +1,6 @@
 import time, uuid
 
-from db.dao_pg import Model, StringField, BooleanField, FloatField, TextField
+from db.dao_pg import Model, StringField, BooleanField, FloatField, TextField, IntegerField
 
 
 def next_id():
@@ -10,7 +10,8 @@ def next_id():
 class User(Model):
     __table__ = 'users'
 
-    id = StringField(primary_key=True, default=next_id, ddl='varchar(50)')
+    # id = StringField(primary_key=True, default=next_id, ddl='varchar(50)')
+    id = IntegerField(primary_key=True,)
     email = StringField(ddl='varchar(50)')
     password = StringField(ddl='varchar(50)')
     username = StringField(ddl='varchar(50)')

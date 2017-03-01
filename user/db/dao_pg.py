@@ -135,8 +135,8 @@ class ModelMetaclass(type):
                     primaryKey = k
                 else:
                     fields.append(k)
-        # if not primaryKey:
-        #     raise Exception('Primary key not found.')
+        if not primaryKey:
+            raise Exception('Primary key not found.')
         for k in mappings.keys():
             attrs.pop(k)
         escaped_fields = list(map(lambda f: '%s' % f, fields))
@@ -147,8 +147,8 @@ class ModelMetaclass(type):
         attrs['__select__'] = 'select %s, %s from %s' % (primaryKey, ', '.join(escaped_fields), tableName)
         # attrs['__insert__'] = 'insert into %s (%s, %s) values (%s)' % (tableName, ', '.join(escaped_fields), primaryKey, create_args_string(len(escaped_fields) + 1))
         attrs['__insert__'] = 'insert into %s (%s) values (%s)' % (tableName, ', '.join(escaped_fields), create_args_string(len(escaped_fields)))
-        attrs['__update__'] = 'update %s set %s where %s=?' % (
-            tableName, ', '.join(map(lambda f: '%s=?' % (mappings.get(f).name or f), fields)), primaryKey)
+        # attrs['__update__'] = 'update %s set %s where %s=?' % (tableName, ', '.join(map(lambda f: '%s=?' % (mappings.get(f).name or f), fields)), primaryKey)
+        attrs['__update__'] = 'update %s set ' % (tableName, )
         attrs['__delete__'] = 'delete from %s where %s=?' % (tableName, primaryKey)
         return type.__new__(cls, name, bases, attrs)
 
@@ -212,7 +212,6 @@ class Model(dict, metaclass=ModelMetaclass):
         rs = await select(' '.join(sql), *args)
         return [cls(**r) for r in rs]
 
-
     @classmethod
     async def get(cls, *args, **kw):
         '''
@@ -234,10 +233,7 @@ class Model(dict, metaclass=ModelMetaclass):
             args.append(kw.get(key))
 
         res = await select(' '.join(sql), *args)
-        # return [type(cls.__name__, (), cls(**r)) for r in res]
-        # return [type(cls.__name__, (Model, ), cls(**r)) for r in res]
         return [type(cls.__name__, (Model, ), cls(**r)) for r in res]
-
 
     @classmethod
     async def findAll(cls, where=None, *args, **kw):
@@ -299,13 +295,30 @@ class Model(dict, metaclass=ModelMetaclass):
 
     async def update(self):
         args = list(map(self.getValue, self.__fields__))
-        args.append(self.getValue(self.__primary_key__))
-        rows = await execute(self.__update__, args)
-        if rows != 1:
+
+        # 处理主键类型 asyncpg 区分类型
+        if isinstance(self.__mappings__.get(self.__primary_key__), IntegerField):
+            args.append(int(self.getValue(self.__primary_key__)))
+        else:
+            args.append(self.getValue(self.__primary_key__))
+
+        self.pop(self.__primary_key__)
+        sql = self.__update__
+        index = 0
+        for index, key in enumerate(self.keys()):
+            index += 1
+            sql += key + '=$' + str(index) + ', '
+        sql = sql[0:-2] + ' where id=$' + str(index+1)
+        rows = await execute(sql, *args)
+
+        if not rows:
             logging.warn('failed to update by primary key: affected rows: %s' % rows)
+            return False
+        else:
+            return True
 
     async def remove(self):
         args = [self.getValue(self.__primary_key__)]
-        rows = await execute(self.__delete__, args)
+        rows = await execute(self.__delete__, *args)
         if rows != 1:
             logging.warn('failed to remove by primary key: affected rows: %s' % rows)
