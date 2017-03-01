@@ -91,7 +91,12 @@ async def update_user(request, id):
     '''
     try:
         if request.form:
-            user = User(**request.parsed_form)
+            # res = {'id': ['4'], 'email': ['em'], 'username': ['user'], 'nickname': ['ck'], 'password': ['pd']}
+            res = {}
+            for key in request.parsed_form.keys():
+                res.update({key: request.parsed_form.get(key)})
+
+            user = User(**res)
             await user.update()
             return json({'msg': 'ok'})
         return json({'msg': 'fail'})

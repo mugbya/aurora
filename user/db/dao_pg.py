@@ -166,13 +166,13 @@ class Model(dict, metaclass=ModelMetaclass):
     def __setattr__(self, key, value):
         self[key] = value
 
-    def get_primary_key(self):
+    def get_primary_key(self, primary_val=None):
         '''
         获取主键值，并处理
         :return:
         '''
-
-        primary_val = self.getValue(self.__primary_key__)
+        if not primary_val:
+            primary_val = self.getValue(self.__primary_key__)
 
         # 处理主键类型 asyncpg 区分类型
         if isinstance(self.__mappings__.get(self.__primary_key__), IntegerField):
@@ -186,10 +186,7 @@ class Model(dict, metaclass=ModelMetaclass):
         :param key:
         :return:
         '''
-        res = getattr(self, key, None)
-        if isinstance(res, list):
-            res = res[0]
-        return res
+        return getattr(self, key, None)
 
     def getValueOrDefault(self, key):
         value = getattr(self, key, None)
@@ -306,7 +303,6 @@ class Model(dict, metaclass=ModelMetaclass):
 
     async def save(self):
         args = list(map(self.getValueOrDefault, self.__fields__))
-        # args.append(self.getValueOrDefault(self.__primary_key__))
 
         rows = await execute(self.__insert__, *args)
         if not rows:
@@ -316,35 +312,35 @@ class Model(dict, metaclass=ModelMetaclass):
             return True
 
     async def update(self):
+        try:
+            primary_val = self.pop(self.__primary_key__)
 
-        # 特殊处置主键
-        primary_val = self.pop(self.__primary_key__)
-        primary_val = primary_val[0] if isinstance(primary_val, list) else primary_val
+            args = list(map(self.getValue, self.keys()))
+            args.append(self.get_primary_key(primary_val=primary_val))
 
-        args = list(map(self.getValue, self.keys()))
-        args.append(self.get_primary_key())
+            sql = self.__update__
+            index = 0
+            for index, key in enumerate(self.keys()):
+                index += 1
+                sql += key + '=$' + str(index) + ', '
+            sql = sql[0:-2] + ' where id=$' + str(index+1)
+            rows = await execute(sql, *args)
 
-        sql = self.__update__
-        index = 0
-        for index, key in enumerate(self.keys()):
-            index += 1
-            sql += key + '=$' + str(index) + ', '
-        sql = sql[0:-2] + ' where id=$' + str(index+1)
-        rows = await execute(sql, *args)
-
-        if not rows:
-            logging.warn('failed to update by primary key: affected rows: %s' % rows)
+            if rows == 'UPDATE 0':
+                raise Exception('record not exits')
+            elif rows == 'UPDATE 1':
+                return True
             return False
-        else:
-            return True
+        except Exception as e:
+            raise Exception(e)
 
     async def delete(self):
         args = [self.get_primary_key()]
         rows = await execute(self.__delete__, *args)
-        if not rows:
-            logging.warn('failed to remove by primary key: affected rows: %s' % rows)
-            return False
-        else:
+        if rows == 'DELETE 0':
+            raise Exception('record not exits')
+        elif rows == 'DELETE 1':
             return True
+        return False
 
 
