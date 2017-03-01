@@ -100,3 +100,22 @@ async def update_user(request, id):
         logger.error('user save error', str(e))
         return json({'msg': 'fail'})
 
+
+@bp.post('/del/<id>/')
+async def del_user(request, id):
+    '''
+    删除user对象
+    :param request:
+    :param id:
+    :return:
+    '''
+    try:
+        if request.form:
+            user = User(id=id)
+            await user.delete()
+            return json({'msg': 'ok'})
+        return json({'msg': 'fail'})
+
+    except Exception as e:
+        logger.error('user save error', str(e))
+        return json({'msg': 'fail'})

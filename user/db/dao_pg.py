@@ -149,7 +149,7 @@ class ModelMetaclass(type):
         attrs['__insert__'] = 'insert into %s (%s) values (%s)' % (tableName, ', '.join(escaped_fields), create_args_string(len(escaped_fields)))
         # attrs['__update__'] = 'update %s set %s where %s=?' % (tableName, ', '.join(map(lambda f: '%s=?' % (mappings.get(f).name or f), fields)), primaryKey)
         attrs['__update__'] = 'update %s set ' % (tableName, )
-        attrs['__delete__'] = 'delete from %s where %s=?' % (tableName, primaryKey)
+        attrs['__delete__'] = 'delete from %s where %s=$1' % (tableName, primaryKey)
         return type.__new__(cls, name, bases, attrs)
 
 
@@ -165,6 +165,20 @@ class Model(dict, metaclass=ModelMetaclass):
 
     def __setattr__(self, key, value):
         self[key] = value
+
+    def get_primary_key(self):
+        '''
+        获取主键值，并处理
+        :return:
+        '''
+
+        primary_val = self.getValue(self.__primary_key__)
+
+        # 处理主键类型 asyncpg 区分类型
+        if isinstance(self.__mappings__.get(self.__primary_key__), IntegerField):
+            return int(primary_val)
+        else:
+            return primary_val
 
     def getValue(self, key):
         '''
@@ -308,12 +322,7 @@ class Model(dict, metaclass=ModelMetaclass):
         primary_val = primary_val[0] if isinstance(primary_val, list) else primary_val
 
         args = list(map(self.getValue, self.keys()))
-
-        # 处理主键类型 asyncpg 区分类型
-        if isinstance(self.__mappings__.get(self.__primary_key__), IntegerField):
-            args.append(int(primary_val))
-        else:
-            args.append(primary_val)
+        args.append(self.get_primary_key())
 
         sql = self.__update__
         index = 0
@@ -329,8 +338,13 @@ class Model(dict, metaclass=ModelMetaclass):
         else:
             return True
 
-    async def remove(self):
-        args = [self.getValue(self.__primary_key__)]
+    async def delete(self):
+        args = [self.get_primary_key()]
         rows = await execute(self.__delete__, *args)
-        if rows != 1:
+        if not rows:
             logging.warn('failed to remove by primary key: affected rows: %s' % rows)
+            return False
+        else:
+            return True
+
+
