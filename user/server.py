@@ -2,12 +2,14 @@ from sanic import Sanic
 
 from api import bp as user_bp
 from api_v2 import bp as user_v2_bp
+from view import bp as view_bp
 from db.dao_pg import setup_connection, close_connection
 from config import settings
 
 app = Sanic(__name__)
 app.blueprint(user_bp)
 app.blueprint(user_v2_bp)
+app.blueprint(view_bp)
 app.static('/static', './static')
 
 
@@ -19,7 +21,7 @@ async def start_connection(app, loop):
     :return:
     '''
     _pool = await setup_connection(app, loop)
-    user_v2_bp.pool = _pool
+    view_bp.pool = user_v2_bp.pool = _pool
 
 
 if __name__ == "__main__":

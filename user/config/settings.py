@@ -33,24 +33,31 @@ python自带日志
 logging_config = dict(
     version=1,
     formatters={
-        'f': {'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'}
+        'default': {
+            'format': '%(asctime)s %(levelname)-8s %(name)-15s %(message)s'
+        }
+    },
+    filter={
     },
     handlers={
-        'h': {'class': 'logging.StreamHandler',
-              'formatter': 'f',
-              'level': logging.DEBUG
-              },
-        'l': {
+        'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'f',
+            'formatter': 'default',
             'level': logging.INFO
         },
-
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': '../log/all.log',
+            'formatter': 'default',
+            'level': logging.INFO
+        },
     },
     loggers={
-        'root': {'handlers': ['l'],
-                 'level': logging.DEBUG
-                 }
+        'view': {
+            'handlers': ['console', 'file'],
+            'level': logging.INFO,
+            "encoding": "utf8"
+        }
     }
 )
 
