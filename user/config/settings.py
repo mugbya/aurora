@@ -53,11 +53,16 @@ logging_config = dict(
         },
     },
     loggers={
+        'db': {
+            'handlers': ['console', 'file'],
+            'level': logging.INFO,
+            "encoding": "utf8"
+        },
         'view': {
             'handlers': ['console', 'file'],
             'level': logging.INFO,
             "encoding": "utf8"
-        }
+        },
     }
 )
 

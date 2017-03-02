@@ -3,7 +3,7 @@ from config import settings
 
 import logging
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 '''
 asyncpg 封装 + orm
@@ -11,7 +11,7 @@ asyncpg 封装 + orm
 
 
 def log(sql, args=()):
-    logging.info('SQL: %s' % sql)
+    logger.info('SQL: %s' % sql)
 
 
 async def setup_connection(app, loop):
@@ -44,10 +44,8 @@ async def close_connection(app, loop):
 async def select(sql, *args, size=None):
     log(sql, args)
     async with _pool.acquire() as con:
-        # async with con.transaction():
-            # cur = await con.fetch(sql.replace('?', '%s'), args or ())
         rs = await con.fetch(sql, *args)
-        logging.info('rows returned: %s' % len(rs))
+        logger.info('rows returned: %s' % len(rs))
         return rs
 
 
@@ -223,10 +221,15 @@ class Model(dict, metaclass=ModelMetaclass):
             args = []
 
         # 用占位符构造查询条件
+        lenth = len(kw.keys())
         for index, key in enumerate(kw.keys()):
-            index += 1
-            sql.append(key + '=$' + str(index))
-            args.append(kw.get(key))
+            if index == 0:
+                sql.append(key + '=$1')
+                args.append(kw.get(key))
+            else:
+                index += 1
+                sql.append(' and ' + key + '=$' + str(index))
+                args.append(kw.get(key))
 
         rs = await select(' '.join(sql), *args)
         return [cls(**r) for r in rs]
@@ -252,6 +255,7 @@ class Model(dict, metaclass=ModelMetaclass):
             args.append(kw.get(key))
 
         res = await select(' '.join(sql), *args)
+        # TODO 构建对象出错
         return [type(cls.__name__, (Model, ), cls(**r)) for r in res]
 
     @classmethod

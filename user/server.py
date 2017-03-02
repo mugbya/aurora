@@ -3,7 +3,7 @@ from sanic import Sanic
 from api import bp as user_bp
 from api_v2 import bp as user_v2_bp
 from view import bp as view_bp
-from db.dao_pg import setup_connection, close_connection
+from db import setup_connection, close_connection
 from config import settings
 
 app = Sanic(__name__)

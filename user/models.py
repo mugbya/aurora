@@ -1,6 +1,6 @@
 import time, uuid
 
-from db.dao_pg import Model, StringField, BooleanField, FloatField, TextField, IntegerField
+from db import Model, StringField, BooleanField, FloatField, TextField, IntegerField
 
 
 def next_id():
