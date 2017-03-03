@@ -6,11 +6,29 @@ from view import bp as view_bp
 from db import setup_connection, close_connection
 from config import settings
 
+from sanic_session import InMemorySessionInterface
+
 app = Sanic(__name__)
+session = InMemorySessionInterface(cookie_name=app.name, prefix=app.name)
+
 app.blueprint(user_bp)
 app.blueprint(user_v2_bp)
 app.blueprint(view_bp)
 app.static('/static', './static')
+
+
+@app.middleware('request')
+async def add_session_to_request(request):
+    # before each request initialize a session
+    # using the client's request
+    await session.open(request)
+
+
+@app.middleware('response')
+async def save_session(request, response):
+    # after each request save the session,
+    # pass the response to set client cookies
+    await session.save(request, response)
 
 
 async def start_connection(app, loop):

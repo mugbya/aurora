@@ -3,8 +3,15 @@
 project settings for Aurora.
 
 """
+import os
 import logging
 from logging.config import dictConfig
+
+# BASE_DIR = os.path.basename(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+PACKAGE_NAME = os.path.basename(os.getcwd())
+
+STATIC_URL = '/static/'
+TEMPLATES = "webContent/templates"
 
 DEBUG = False
 
@@ -53,13 +60,18 @@ logging_config = dict(
         },
     },
     loggers={
+        'sanic': {
+            'handlers': ['file'],
+            'level': logging.INFO,
+            "encoding": "utf8"
+        },
         'db': {
-            'handlers': ['console', 'file'],
+            'handlers': ['file'],
             'level': logging.INFO,
             "encoding": "utf8"
         },
         'view': {
-            'handlers': ['console', 'file'],
+            'handlers': ['file'],
             'level': logging.INFO,
             "encoding": "utf8"
         },

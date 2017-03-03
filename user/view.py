@@ -1,11 +1,11 @@
 import logging
 from sanic.response import text, html, json
-from jinja2 import Template, PackageLoader, Environment
 from sanic.blueprints import Blueprint
-
+from util.sanic_jinja import render
 from models import User
 
 bp = Blueprint('view_user')
+
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,12 @@ async def login(request):
             response.cookies[username]['domain'] = '.gotta-go-fast.com'
             response.cookies[username]['httponly'] = True
             return response
+
+            # return json(user_list)
         else:
             return json({'msg': 'user not exist'})
     else:
-        pass
+        return render('login.html', request)
+
+
+
