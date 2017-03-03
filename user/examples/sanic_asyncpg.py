@@ -1,16 +1,32 @@
 from sanic.response import json
 from sanic import Blueprint
+from sanic import Sanic
+from user.config import settings
+
+from user.db import setup_connection, close_connection
 
 import logging
 
 logger = logging.getLogger()
 
+app = Sanic(__name__)
 bp = Blueprint('user_v2', url_prefix='/v2/user')
 
 '''
 /v2/user 旨在 以原生sql实现业务需求
 
 '''
+
+
+async def start_connection(app, loop):
+    '''
+    将数据库连接池放入blueprint
+    :param app:
+    :param loop:
+    :return:
+    '''
+    _pool = await setup_connection(app, loop)
+    bp.pool = _pool
 
 
 @bp.route('/')
@@ -90,3 +106,12 @@ async def save_user(request):
     except Exception as e:
         logger.error('user save error', str(e))
         return json({'msg': 'fail'})
+
+
+if __name__ == "__main__":
+    '''
+    sanic 启动时创建数据库连接池，服务正常结束时关闭连接池
+    '''
+    app.blueprint(bp)
+    app.run(host="0.0.0.0", port=settings.PORT, workers=settings.workers, debug=settings.DEBUG,
+            after_start=start_connection, after_stop=close_connection)

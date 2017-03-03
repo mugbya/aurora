@@ -10,4 +10,6 @@ This Project based Sanic
 - uvloop
 - sanic
 - asyncpg
-- raven
+- jinja2
+
+

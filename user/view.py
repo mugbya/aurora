@@ -1,8 +1,8 @@
 import logging
 from sanic.response import text, html, json
 from sanic.blueprints import Blueprint
-from util.sanic_jinja import render
-from models import User
+from user.util.sanic_jinja import render
+from user.models import User
 
 bp = Blueprint('view_user')
 
@@ -31,4 +31,19 @@ async def login(request):
         return render('login.html', request)
 
 
-
+@bp.post('/test_login/')
+async def test_login(request):
+    '''
+    服务端测试代码
+    测试 并发数据库连接池情况
+    :param request:
+    :return:
+    '''
+    if request.method == 'POST':
+        username = request.json.get('username', '')
+        user_list = await User.filter(nickname=username)
+        if user_list:
+            response = json(user_list)
+            return response
+        else:
+            return json({'msg': 'user not exist'})

@@ -1,4 +1,4 @@
-from db import Model, StringField, BooleanField, FloatField, TextField, IntegerField
+from user.db import Model, StringField, BooleanField, FloatField, TextField, IntegerField
 
 
 class User(Model):

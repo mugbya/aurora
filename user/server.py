@@ -1,19 +1,16 @@
 from sanic import Sanic
 
-from api import bp as user_bp
-from api_v2 import bp as user_v2_bp
-from view import bp as view_bp
-from db import setup_connection, close_connection
-from config import settings
+from user.view import bp
+from user.db import setup_connection, close_connection
+from user.config import settings
 
 from sanic_session import InMemorySessionInterface
 
 app = Sanic(__name__)
 session = InMemorySessionInterface(cookie_name=app.name, prefix=app.name)
 
-app.blueprint(user_bp)
-app.blueprint(user_v2_bp)
-app.blueprint(view_bp)
+
+app.blueprint(bp)
 app.static('/static', './static')
 
 
@@ -39,7 +36,7 @@ async def start_connection(app, loop):
     :return:
     '''
     _pool = await setup_connection(app, loop)
-    view_bp.pool = user_v2_bp.pool = _pool
+    bp.pool = _pool
 
 
 if __name__ == "__main__":

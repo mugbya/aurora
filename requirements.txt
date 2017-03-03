@@ -1,6 +1,8 @@
 
 # requirement python3.5
 
+jinja2
+
 aiofiles
 
 httptools
@@ -11,9 +13,11 @@ uvloop
 
 sanic
 
+requests
+
 
 # 日记记录
-raven
+# raven
 
 
 #  数据库连接
