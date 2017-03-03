@@ -10,6 +10,12 @@ bp = Blueprint('view_user')
 logger = logging.getLogger(__name__)
 
 
+@bp.get('/')
+async def index(request):
+
+    return render('index.html', request)
+
+
 @bp.route('/login/', methods=['GET', 'POST'])
 async def login(request):
     if request.method == 'POST':
@@ -22,7 +28,8 @@ async def login(request):
             response.cookies[username] = username
             response.cookies[username]['domain'] = '.gotta-go-fast.com'
             response.cookies[username]['httponly'] = True
-            return response
+            return redirect('/')
+            # return response
             # return json(user_list)
         else:
             return json({'msg': 'user not exist'})

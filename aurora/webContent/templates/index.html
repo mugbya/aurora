@@ -1,43 +1,16 @@
 {% extends "base/base.html" %}
 
 {% block header %}
-{% module Head() %}
-{% end %}
+{% endblock %}
 
 {% block body %}
 
 <div class="container demo-content">
-    <div class="row">
-        <div class="col-md-8">
-            <div class="question-post-list">
-                {% for blog in blog_list %}
-                <div class="qp-item">
-                    <div class="tag-box">
-                        <!-- tag-red tag-gray tag-green -->
-                        <div class="tag-item">
-						<span class="tag-default">
-							{{ blog['comment_sum'] }} <small>回答</small>
-						</span>
-                        </div>
+    This is index
 
-                    </div>
-                    <div class="content">
-                        <div class="info">
-                            作者： {{ blog['username'] }}
-                        </div>
-                        <h2 class="title"><a href="/blog/{{ blog['id']}} ">{{ blog['title'] }}</a></h2>
-
-                    </div>
-                </div>
-                {% end %}
-
-            </div>
-        </div>
-
-    </div>
 </div>
-{% end %}
+{% endblock %}
 
 {% block footer %}
 
-{% end %}
+{% endblock %}

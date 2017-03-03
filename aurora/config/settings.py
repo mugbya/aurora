@@ -78,7 +78,7 @@ logging_config = dict(
     }
 )
 
-# dictConfig(logging_config)
+dictConfig(logging_config)
 
 try:
     from .local_settings import *
