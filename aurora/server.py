@@ -1,8 +1,8 @@
 from sanic import Sanic
 
-from user.view import bp
-from user.db import setup_connection, close_connection
-from user.config import settings
+from aurora.view import bp
+from aurora.db import setup_connection, close_connection
+from aurora.config import settings
 
 from sanic_session import InMemorySessionInterface
 

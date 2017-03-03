@@ -1,8 +1,8 @@
 import logging
 from sanic.response import text, html, json
 from sanic.blueprints import Blueprint
-from user.util.sanic_jinja import render
-from user.models import User
+from aurora.util.sanic_jinja import render
+from aurora.models import User
 
 bp = Blueprint('view_user')
 

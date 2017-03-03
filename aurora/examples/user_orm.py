@@ -1,10 +1,10 @@
 from sanic.response import json
 from sanic import Blueprint
 from sanic import Sanic
-from user.models import User
-from user.config import settings
+from aurora.models import User
+from aurora.config import settings
 
-from user.db import setup_connection, close_connection
+from aurora.db import setup_connection, close_connection
 
 import logging
 logger = logging.getLogger()

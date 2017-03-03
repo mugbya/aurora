@@ -1,4 +1,4 @@
-from user.db import Model, StringField, BooleanField, FloatField, TextField, IntegerField
+from aurora.db import Model, StringField, BooleanField, FloatField, TextField, IntegerField
 
 
 class User(Model):

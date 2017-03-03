@@ -1,5 +1,5 @@
 import asyncpg
-from user.config import settings
+from aurora.config import settings
 
 import logging
 

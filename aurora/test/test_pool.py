@@ -44,7 +44,7 @@ async def run_scraper_tasks(executor):
 
 def test_by_asyncio():
     '''
-
+    使用 asyncio 测试并发连接池情况
     :return:
     '''
     start = time.time()
