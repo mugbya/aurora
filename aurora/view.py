@@ -1,5 +1,5 @@
 import logging
-from sanic.response import text, html, json
+from sanic.response import text, html, json, redirect
 from sanic.blueprints import Blueprint
 from aurora.util.sanic_jinja import render
 from aurora.models import User
@@ -23,7 +23,6 @@ async def login(request):
             response.cookies[username]['domain'] = '.gotta-go-fast.com'
             response.cookies[username]['httponly'] = True
             return response
-
             # return json(user_list)
         else:
             return json({'msg': 'user not exist'})
@@ -31,19 +30,4 @@ async def login(request):
         return render('login.html', request)
 
 
-@bp.post('/test_login/')
-async def test_login(request):
-    '''
-    服务端测试代码
-    测试 并发数据库连接池情况
-    :param request:
-    :return:
-    '''
-    if request.method == 'POST':
-        username = request.json.get('username', '')
-        user_list = await User.filter(nickname=username)
-        if user_list:
-            response = json(user_list)
-            return response
-        else:
-            return json({'msg': 'user not exist'})
+
