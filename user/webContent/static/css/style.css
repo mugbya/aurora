@@ -1,0 +1,50 @@
+.container, .navbar-static-top .container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {
+    width: 940px;
+}
+
+a {
+    color: #337ab7 !important;
+    text-decoration: none !important;
+}
+
+.btn {
+    border: none;
+    background: #34495e;
+    color: white;
+    font-size: 16.5px;
+    text-decoration: none;
+    text-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    -webkit-transition: 0.25s;
+    -moz-transition: 0.25s;
+    -o-transition: 0.25s;
+    transition: 0.25s;
+    -webkit-backface-visibility: hidden;
+}
+
+.demo-center {
+    width: 240px;
+    padding-bottom: 100px;
+    margin: 0 auto;
+}
+
+.demo-content {
+    padding: 60px 0;
+}
+
+.dropdown-menu {
+    top: 100% !important;
+    width: 320px !important;
+
+}
+
+.message-line{
+    padding-left: 15px;
+}
+
+.message-line-brown{
+    padding-left: 15px;
+    color: brown;
+}

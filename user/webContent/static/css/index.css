@@ -1,0 +1,123 @@
+/* BACKGROUND GRADIENT */
+/* BACKGROUND SIZE */
+/* BORDER RADIUS */
+/* BOX */
+/* BOX RGBA */
+/* BOX SHADOW */
+/* BOX SIZING */
+/* COLUMNS */
+/* DOUBLE BORDERS */
+/* FLEX */
+/* FLIP */
+/* FONT FACE */
+/* OPACITY */
+/* OUTLINE RADIUS */
+/* RESIZE */
+/* ROTATE*/
+/* TEXT SHADOW */
+/* TRANSFORM  */
+/* TRANSITION */
+.question-post-list .qp-item {
+  position: relative;
+  padding: 10px 0 10px 140px;
+  border-bottom: 1px solid #e5e5e5; }
+.question-post-list .tag-box {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  overflow: hidden;
+  *zoom: 1; }
+  .question-post-list .tag-box .tag-item {
+    display: block;
+    float: left;
+    width: 40px;
+    font-size: 12px;
+    text-align: center; }
+    .question-post-list .tag-box .tag-item small {
+      display: block; }
+  .question-post-list .tag-box .tag-default {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    line-height: 16px;
+    padding: 4px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box; }
+  .question-post-list .tag-box .tag-green {
+    color: #fff;
+    background-color: #009a61; }
+  .question-post-list .tag-box .tag-red {
+    color: #fff;
+    background-color: #ad3a37; }
+  .question-post-list .tag-box .tag-gray {
+    color: #fff;
+    background-color: #808b87; }
+
+.info {
+  font-size: 12px;
+  color: #999; }
+
+.content .title {
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 400;
+  margin: 6px 0;
+  color: #252525;
+  word-break: break-all; }
+.content .taglist {
+  display: inline-block;
+  list-style: none;
+  padding: 0; }
+.content .tagpopup {
+  display: inline-block;
+  padding: 0 5px;
+  font-size: 12px;
+  line-height: 16px;
+  background: #E7F2ED;
+  color: #017e66;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px; }
+
+.sidebar-box {
+  margin: 0 0 20px 0; }
+  .sidebar-box .title {
+    font-size: 18px;
+    color: #252525;
+    margin: 10px 0; }
+  .sidebar-box .taglist {
+    display: block;
+    padding: 30px 0;
+    list-style: none;
+    margin: 0;
+    border: 1px solid #e5e5e5;
+    border-width: 1px 0; }
+    .sidebar-box .taglist .tag {
+      display: inline-block;
+      padding: 0 6px;
+      font-size: 13px;
+      line-height: 24px;
+      margin: 0 1px 5px 0;
+      background: #E7F2ED;
+      color: #017e66; }
+      .sidebar-box .taglist .tag a {
+        color: #017e66; }
+  .sidebar-box .qalist {
+    list-style: none;
+    padding: 0;
+    margin: 0; }
+    .sidebar-box .qalist .qa {
+      display: block;
+      margin: 0 0 10px; }
+    .sidebar-box .qalist a {
+      font-size: 14px; }
+    .sidebar-box .qalist small {
+      font-size: 13px; }
+
+.oauth img {
+    width: 16px;
+}
+
+/*# sourceMappingURL=index.css.map */
+

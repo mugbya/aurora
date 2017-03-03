@@ -1,0 +1,53 @@
+{% extends "base/base.html" %}
+
+
+{% block body %}
+<div class="container">
+    <div class="row clearfix">
+        <div class="demo-center">
+            <div class="row">
+                <h3>
+                    消息推送示例
+                </h3>
+                <p>
+                    用户名： pom 密码： pom
+                </p>
+                <p>
+                    用户名： nash 密码： nash
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row clearfix">
+        <div class="login-box">
+            <div class="row">
+
+                <form action="/login/" method="post">
+
+                    <input type="hidden" name="next" value="{{next}}" />
+
+                    <div class="row">
+                        <input type="text" name="username" placeholder="用户名"  class="form-control">
+                        <br>
+                    </div>
+
+                    <div class="row">
+                        <input type="password" name="password" placeholder="密码" name="password" class="form-control">
+                        <br>
+                    </div>
+
+                    <input type="submit" class="btn btn-large btn-block">
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}

@@ -54,21 +54,6 @@ async def execute(sql, *args, autocommit=True):
     async with _pool.acquire() as con:
         rs = await con.execute(sql, *args)
         return rs
-    # with (yield from __pool) as conn:
-    #     if not autocommit:
-    #         yield from conn.begin()
-    #     try:
-    #         cur = yield from conn.cursor()
-    #         yield from cur.execute(sql.replace('?', '%s'), args)
-    #         affected = cur.rowcount
-    #         yield from cur.close()
-    #         if not autocommit:
-    #             yield from conn.commit()
-    #     except BaseException as e:
-    #         if not autocommit:
-    #             yield from conn.rollback()
-    #         raise
-    #     return affected
 
 def create_args_string(num):
     L = []
