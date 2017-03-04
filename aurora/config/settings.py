@@ -10,7 +10,7 @@ from logging.config import dictConfig
 # BASE_DIR = os.path.basename(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PACKAGE_NAME = os.path.basename(os.getcwd())
 
-STATIC_URL = '/static/'
+STATIC_URL = 'webContent/static'
 TEMPLATES = "webContent/templates"
 
 DEBUG = False

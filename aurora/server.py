@@ -11,7 +11,7 @@ session = InMemorySessionInterface(cookie_name=app.name, prefix=app.name)
 
 
 app.blueprint(bp)
-app.static('/static', './static')
+app.static('/static', settings.STATIC_URL)
 
 
 @app.middleware('request')
