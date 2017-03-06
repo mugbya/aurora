@@ -3,11 +3,7 @@
 
 jinja2
 
-aiofiles
-
-httptools
-
-ujson
+asyncio_redis
 
 uvloop
 
