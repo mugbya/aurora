@@ -5,9 +5,9 @@ jinja2
 
 asyncio_redis
 
-uvloop
+uvloop==0.8.0
 
-sanic
+sanic==0.3.1
 
 requests
 
