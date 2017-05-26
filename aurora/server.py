@@ -1,6 +1,7 @@
 from sanic import Sanic
 import asyncio_redis
 from aurora.view import bp
+from aurora.user_views import bp as user_bp
 from aurora.db import setup_connection, close_connection
 from aurora.config import settings
 
@@ -9,9 +10,12 @@ from sanic_session import RedisSessionInterface
 app = Sanic(__name__)
 
 app.blueprint(bp)
+app.blueprint(user_bp)
+
 app.static('/static', settings.STATIC_URL)
 
 
+@app.listener('after_server_start')
 async def start_connection(app, loop):
     '''
     将数据库连接池放入blueprint
@@ -21,6 +25,7 @@ async def start_connection(app, loop):
     '''
     _data_pool = await setup_connection(app, loop)
     bp.pool = _data_pool
+
 
 async def startup_redis_pool():
     # redis
@@ -49,5 +54,5 @@ if __name__ == "__main__":
     '''
     session = RedisSessionInterface(redis_getter=startup_redis_pool)
 
-    app.run(host="0.0.0.0", port=settings.PORT, workers=settings.workers, debug=settings.DEBUG,
-            after_start=start_connection, after_stop=close_connection)
+    app.run(host="127.0.0.1", port=settings.PORT, workers=settings.workers, debug=settings.DEBUG)
+

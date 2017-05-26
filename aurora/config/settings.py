@@ -7,7 +7,7 @@ import os
 import logging
 from logging.config import dictConfig
 
-# BASE_DIR = os.path.basename(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PACKAGE_NAME = os.path.basename(os.getcwd())
 
 STATIC_URL = 'webContent/static'
@@ -54,12 +54,17 @@ logging_config = dict(
         },
         'file': {
             'class': 'logging.FileHandler',
-            'filename': '../log/all.log',
+            'filename': BASE_DIR + '/log/all.log',
             'formatter': 'default',
             'level': logging.INFO
         },
     },
     loggers={
+        '': {
+            'handlers': ['file'],
+            'level': logging.INFO,
+            "encoding": "utf8"
+        },
         'sanic': {
             'handlers': ['file'],
             'level': logging.INFO,
