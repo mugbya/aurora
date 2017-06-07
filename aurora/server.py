@@ -4,10 +4,12 @@ from aurora.view import bp
 from aurora.user_views import bp as user_bp
 from aurora.db import setup_connection, close_connection
 from aurora.config import settings
-
-from sanic_session import RedisSessionInterface
+from aurora.session import Session
 
 app = Sanic(__name__)
+session = Session()
+
+session.init_app(app)
 
 app.blueprint(bp)
 app.blueprint(user_bp)
@@ -27,32 +29,30 @@ async def start_connection(app, loop):
     bp.pool = _data_pool
 
 
-async def startup_redis_pool():
-    # redis
-    _redis_pool = await asyncio_redis.Pool.create(host='127.0.0.1', port=6379, poolsize=10)
-    bp.redis = _redis_pool
-    return _redis_pool
-
-
 @app.middleware('request')
 async def add_session_to_request(request):
     # before each request initialize a session
     # using the client's request
-    await session.open(request)
+    await app.session_interface.open(request)
+
+#
+# @app.middleware('response')
+# async def save_session(request, response):
+#     # after each request save the session,
+#     # pass the response to set client cookies
+#     await session.save(request, response)
 
 
-@app.middleware('response')
-async def save_session(request, response):
-    # after each request save the session,
-    # pass the response to set client cookies
-    await session.save(request, response)
-
+@app.middleware('request')
+async def check_cookie(request):
+    pass
+    # await session.open(request)
 
 if __name__ == "__main__":
     '''
     sanic 启动时创建数据库连接池，服务正常结束时关闭连接池
     '''
-    session = RedisSessionInterface(redis_getter=startup_redis_pool)
+    # session = RedisSessionInterface(redis_getter=startup_redis_pool)
 
     app.run(host="127.0.0.1", port=settings.PORT, workers=settings.workers, debug=settings.DEBUG)
 

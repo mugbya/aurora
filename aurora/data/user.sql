@@ -1,4 +1,6 @@
-CREATE DATABASE  ull_user
+CREATE DATABASE  aurora;
+
+
 
 CREATE TABLE "users"
 (
@@ -11,17 +13,17 @@ CREATE TABLE "users"
 
 
 
- INSERT INTO users (username, nickname) VALUES ('a', 'a');
- INSERT INTO users (username, nickname) VALUES ('b', 'b');
- INSERT INTO users (username, nickname) VALUES ('c', 'c');
- INSERT INTO users (username, nickname) VALUES ('d', 'd');
- INSERT INTO users (username, nickname) VALUES ('e', 'e');
- INSERT INTO users (username, nickname) VALUES ('f', 'f');
- INSERT INTO users (username, nickname) VALUES ('g', 'g');
- INSERT INTO users (username, nickname) VALUES ('h', 'h');
- INSERT INTO users (username, nickname) VALUES ('i', 'i');
- INSERT INTO users (username, nickname) VALUES ('j', 'j');
- INSERT INTO users (username, nickname) VALUES ('k', 'k');
- INSERT INTO users (username, nickname) VALUES ('l', 'l');
- INSERT INTO users (username, nickname) VALUES ('m', 'm');
- INSERT INTO users (username, nickname) VALUES ('n', 'n');
+ INSERT INTO users (username, nickname, password) VALUES ('a', 'a', 'a');
+ INSERT INTO users (username, nickname, password) VALUES ('b', 'b', 'b');
+ INSERT INTO users (username, nickname, password) VALUES ('c', 'c', 'c');
+ INSERT INTO users (username, nickname, password) VALUES ('d', 'd', 'd');
+ INSERT INTO users (username, nickname, password) VALUES ('e', 'e', 'e');
+ INSERT INTO users (username, nickname, password) VALUES ('f', 'f', 'f');
+ INSERT INTO users (username, nickname, password) VALUES ('g', 'g', 'g');
+ INSERT INTO users (username, nickname, password) VALUES ('h', 'h', 'h');
+ INSERT INTO users (username, nickname, password) VALUES ('i', 'i', 'i');
+ INSERT INTO users (username, nickname, password) VALUES ('j', 'j', 'j');
+ INSERT INTO users (username, nickname, password) VALUES ('k', 'k', 'k');
+ INSERT INTO users (username, nickname, password) VALUES ('l', 'l', 'l');
+ INSERT INTO users (username, nickname, password) VALUES ('m', 'm', 'm');
+ INSERT INTO users (username, nickname, password) VALUES ('n', 'n', 'n');

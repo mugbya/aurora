@@ -19,6 +19,7 @@ workers = 4
 
 PORT = 80
 
+
 DB_CONFIG = {
     'host': '<host>',
     'user': '<username>',
@@ -26,6 +27,14 @@ DB_CONFIG = {
     'port': '<port>',
     'database': '<database>'
 }
+
+# session 配置
+SESSION = {
+    'session_type': 'redis',
+    'host': '127.0.0.1',
+    'port': '6379',
+}
+
 
 '''
 日志集成器
@@ -56,19 +65,21 @@ logging_config = dict(
             'class': 'logging.FileHandler',
             'filename': BASE_DIR + '/log/all.log',
             'formatter': 'default',
-            'level': logging.INFO
+            'level': logging.INFO,
         },
     },
     loggers={
         '': {
             'handlers': ['file'],
             'level': logging.INFO,
-            "encoding": "utf8"
+            "encoding": "utf8",
+            'propagate': True
         },
         'sanic': {
             'handlers': ['file'],
             'level': logging.INFO,
-            "encoding": "utf8"
+            "encoding": "utf8",
+            'propagate': True
         },
         'db': {
             'handlers': ['file'],
@@ -78,11 +89,11 @@ logging_config = dict(
         'view': {
             'handlers': ['file'],
             'level': logging.INFO,
-            "encoding": "utf8"
+            "encoding": "utf8",
+            'propagate': True
         },
     }
 )
-
 dictConfig(logging_config)
 
 try:
